@@ -7,8 +7,12 @@ import {
 } from "./modules/examples";
 import { config } from "../package.json";
 import { getString, initLocale } from "./utils/locale";
-import { registerPrefsScripts } from "./modules/preferenceScript";
 import { createZToolkit } from "./utils/ztoolkit";
+import { registerMenu, selectoritem, disabledMeun } from "./modules/menu";
+import {
+  registerPrefsWindow,
+  registerPrefsScripts,
+} from "./modules/preferenceWindow";
 
 async function onStartup() {
   await Promise.all([
@@ -26,13 +30,14 @@ async function onStartup() {
 
   initLocale();
 
-  BasicExampleFactory.registerPrefs();
+  registerPrefsWindow();
 
   BasicExampleFactory.registerNotifier();
 
   KeyExampleFactory.registerShortcuts();
 
   await onMainWindowLoad(window);
+  ZoteroPane.itemsView.onSelect.addListener(ztoolkit.log("00000"));
 }
 
 async function onMainWindowLoad(win: Window): Promise<void> {
@@ -58,19 +63,15 @@ async function onMainWindowLoad(win: Window): Promise<void> {
 
   UIExampleFactory.registerStyleSheet();
 
-  UIExampleFactory.registerRightClickMenuItem();
-
-  UIExampleFactory.registerRightClickMenuPopup();
+  registerMenu();
+  // disabledMeun();
+  selectoritem();
 
   UIExampleFactory.registerWindowMenuWithSeparator();
 
   await UIExampleFactory.registerExtraColumn();
 
   await UIExampleFactory.registerExtraColumnWithCustomCell();
-
-  await UIExampleFactory.registerCustomItemBoxRow();
-
-  UIExampleFactory.registerLibraryTabPanel();
 
   await UIExampleFactory.registerReaderTabPanel();
 
@@ -87,8 +88,6 @@ async function onMainWindowLoad(win: Window): Promise<void> {
     text: `[100%] ${getString("startup-finish")}`,
   });
   popupWin.startCloseTimer(5000);
-
-  addon.hooks.onDialogEvents("dialogExample");
 }
 
 async function onMainWindowUnload(win: Window): Promise<void> {
@@ -116,13 +115,12 @@ async function onNotify(
 ) {
   // You can add your code to the corresponding notify type
   ztoolkit.log("notify", event, type, ids, extraData);
-  if (
-    event == "select" &&
-    type == "tab" &&
-    extraData[ids[0]].type == "reader"
-  ) {
+  if (event == "select" && type == "item") {
+    ztoolkit.log("1234455");
+    ztoolkit.log("1234455");
     BasicExampleFactory.exampleNotifierCallback();
   } else {
+    ztoolkit.log("1234455");
     return;
   }
 }
@@ -143,18 +141,18 @@ async function onPrefsEvent(type: string, data: { [key: string]: any }) {
   }
 }
 
-function onShortcuts(type: string) {
-  switch (type) {
-    case "larger":
-      KeyExampleFactory.exampleShortcutLargerCallback();
-      break;
-    case "smaller":
-      KeyExampleFactory.exampleShortcutSmallerCallback();
-      break;
-    default:
-      break;
-  }
-}
+// function onShortcuts(type: string) {
+//   switch (type) {
+//     case "larger":
+//       KeyExampleFactory.exampleShortcutLargerCallback();
+//       break;
+//     case "smaller":
+//       KeyExampleFactory.exampleShortcutSmallerCallback();
+//       break;
+//     default:
+//       break;
+//   }
+// }
 
 function onDialogEvents(type: string) {
   switch (type) {
@@ -189,6 +187,5 @@ export default {
   onMainWindowUnload,
   onNotify,
   onPrefsEvent,
-  onShortcuts,
   onDialogEvents,
 };

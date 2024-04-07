@@ -1,5 +1,7 @@
 import { config } from "../../package.json";
 import { getString } from "../utils/locale";
+import { UpdataMate } from "./matedate";
+import { disabledMeun } from "./menus";
 
 function example(
   target: any,
@@ -69,18 +71,6 @@ export class BasicExampleFactory {
   private static unregisterNotifier(notifierID: string) {
     Zotero.Notifier.unregisterObserver(notifierID);
   }
-
-  @example
-  static registerPrefs() {
-    const prefOptions = {
-      pluginID: config.addonID,
-      src: rootURI + "chrome/content/preferences.xhtml",
-      label: getString("prefs-title"),
-      image: `chrome://${config.addonRef}/content/icons/favicon.png`,
-      defaultXUL: true,
-    };
-    ztoolkit.PreferencePane.register(prefOptions);
-  }
 }
 
 export class KeyExampleFactory {
@@ -143,41 +133,6 @@ export class UIExampleFactory {
   }
 
   @example
-  static registerRightClickMenuItem() {
-    const menuIcon = `chrome://${config.addonRef}/content/icons/favicon@0.5x.png`;
-    // item menuitem with icon
-    ztoolkit.Menu.register("item", {
-      tag: "menuitem",
-      id: "zotero-itemmenu-addontemplate-test",
-      label: getString("menuitem-label"),
-      commandListener: (ev) => addon.hooks.onDialogEvents("dialogExample"),
-      icon: menuIcon,
-    });
-  }
-
-  @example
-  static registerRightClickMenuPopup() {
-    ztoolkit.Menu.register(
-      "item",
-      {
-        tag: "menu",
-        label: getString("menupopup-label"),
-        children: [
-          {
-            tag: "menuitem",
-            label: getString("menuitem-submenulabel"),
-            oncommand: "alert('Hello World! Sub Menuitem.')",
-          },
-        ],
-      },
-      "before",
-      document.querySelector(
-        "#zotero-itemmenu-addontemplate-test",
-      ) as XUL.MenuItem,
-    );
-  }
-
-  @example
   static registerWindowMenuWithSeparator() {
     ztoolkit.Menu.register("menuFile", {
       tag: "menuseparator",
@@ -234,90 +189,6 @@ export class UIExampleFactory {
           span.innerText = "⭐" + data;
           return span;
         },
-      },
-    );
-  }
-
-  @example
-  static async registerCustomItemBoxRow() {
-    await ztoolkit.ItemBox.register(
-      "itemBoxFieldEditable",
-      "Editable Custom Field",
-      (field, unformatted, includeBaseMapped, item, original) => {
-        return (
-          ztoolkit.ExtraField.getExtraField(item, "itemBoxFieldEditable") || ""
-        );
-      },
-      {
-        editable: true,
-        setFieldHook: (field, value, loadIn, item, original) => {
-          window.alert("Custom itemBox value is changed and saved to extra!");
-          ztoolkit.ExtraField.setExtraField(
-            item,
-            "itemBoxFieldEditable",
-            value,
-          );
-          return true;
-        },
-        index: 1,
-      },
-    );
-
-    await ztoolkit.ItemBox.register(
-      "itemBoxFieldNonEditable",
-      "Non-Editable Custom Field",
-      (field, unformatted, includeBaseMapped, item, original) => {
-        return (
-          "[CANNOT EDIT THIS]" + (item.getField("title") as string).slice(0, 10)
-        );
-      },
-      {
-        editable: false,
-        index: 2,
-      },
-    );
-  }
-
-  @example
-  static registerLibraryTabPanel() {
-    const tabId = ztoolkit.LibraryTabPanel.register(
-      getString("tabpanel-lib-tab-label"),
-      (panel: XUL.Element, win: Window) => {
-        const elem = ztoolkit.UI.createElement(win.document, "vbox", {
-          children: [
-            {
-              tag: "h2",
-              properties: {
-                innerText: "Hello World!",
-              },
-            },
-            {
-              tag: "div",
-              properties: {
-                innerText: "This is a library tab.",
-              },
-            },
-            {
-              tag: "button",
-              namespace: "html",
-              properties: {
-                innerText: "Unregister",
-              },
-              listeners: [
-                {
-                  type: "click",
-                  listener: () => {
-                    ztoolkit.LibraryTabPanel.unregister(tabId);
-                  },
-                },
-              ],
-            },
-          ],
-        });
-        panel.append(elem);
-      },
-      {
-        targetIndex: 1,
       },
     );
   }
@@ -652,7 +523,7 @@ export class HelperExampleFactory {
     const dialogHelper = new ztoolkit.Dialog(10, 2)
       .addCell(0, 0, {
         tag: "h1",
-        properties: { innerHTML: "Helper Examples" },
+        properties: { innerHTML: "元数据更新" },
       })
       .addCell(1, 0, {
         tag: "h2",

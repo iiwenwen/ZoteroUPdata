@@ -1,15 +1,15 @@
 {
-  "name": "zotero-addon-template",
-  "version": "1.1.1",
-  "description": "Zotero Addon Template",
+  "name": "zotero-updata-metadata",
+  "version": "0.0.1",
+  "description": "Zotero updata metadata ",
   "config": {
-    "addonName": "Zotero Addon Template",
-    "addonID": "addontemplate@euclpts.com",
-    "addonRef": "addontemplate",
-    "addonInstance": "AddonTemplate",
-    "prefsPrefix": "extensions.zotero.addontemplate",
-    "releasePage": "https://github.com/windingwind/zotero-addon-template/releases",
-    "updateJSON": "https://raw.githubusercontent.com/windingwind/zotero-addon-template/main/update.json"
+    "addonName": "Zotero Updata Metadata",
+    "addonID": "zoteroupdatametadata@iiwenwen",
+    "addonRef": "zoteroupdatametadata",
+    "addonInstance": "UpdataMatedata",
+    "prefsPrefix": "extensions.zotero.zoteroupdatametadata",
+    "releasePage": "https://github.com/iiwenwen/ZoteroUPdata/releases",
+    "updateJSON": "https://raw.githubusercontent.com/iiwenwen/ZoteroUPdata/main/update.json"
   },
   "main": "src/index.ts",
   "scripts": {
@@ -23,7 +23,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/windingwind/zotero-addon-template.git"
+    "url": "git+https://github.com//iiwenwen/ZoteroUPdata.git"
   },
   "author": "windingwind",
   "license": "AGPL-3.0-or-later",

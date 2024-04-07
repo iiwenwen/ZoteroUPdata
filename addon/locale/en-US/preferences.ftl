@@ -1,5 +1,7 @@
-pref-title = Addon Template Example
-pref-enable =
-    .label = Enable
-pref-input = Input
+pref-general = Setting
+pref-select =
+    .value = mode：
+pref-saveAttachments =
+    .label = saveAttachments
+pref-about = about
 pref-help = { $name } Build { $version } { $time }

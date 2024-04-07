@@ -1,5 +1,8 @@
-pref-title = 插件模板设置示例
-pref-enable =
-    .label = 开启
-pref-input = 输入
+pref-general = 设置
+pref-select =
+    .value = 模式：
+pref-saveAttachments =
+    .label = 保存附件
+pref-about = 关于
 pref-help = { $name } Build { $version } { $time }
+
