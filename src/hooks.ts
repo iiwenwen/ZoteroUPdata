@@ -1,14 +1,7 @@
-import {
-  BasicExampleFactory,
-  HelperExampleFactory,
-  KeyExampleFactory,
-  PromptExampleFactory,
-  UIExampleFactory,
-} from "./modules/examples";
 import { config } from "../package.json";
 import { getString, initLocale } from "./utils/locale";
 import { createZToolkit } from "./utils/ztoolkit";
-import { registerMenu, selectoritem, disabledMeun } from "./modules/menu";
+import { registerMenu, selectoritem } from "./modules/menu";
 import {
   registerPrefsWindow,
   registerPrefsScripts,
@@ -32,12 +25,7 @@ async function onStartup() {
 
   registerPrefsWindow();
 
-  BasicExampleFactory.registerNotifier();
-
-  KeyExampleFactory.registerShortcuts();
-
   await onMainWindowLoad(window);
-  ZoteroPane.itemsView.onSelect.addListener(ztoolkit.log("00000"));
 }
 
 async function onMainWindowLoad(win: Window): Promise<void> {
@@ -61,25 +49,9 @@ async function onMainWindowLoad(win: Window): Promise<void> {
     text: `[30%] ${getString("startup-begin")}`,
   });
 
-  UIExampleFactory.registerStyleSheet();
-
   registerMenu();
-  // disabledMeun();
-  selectoritem();
 
-  UIExampleFactory.registerWindowMenuWithSeparator();
-
-  await UIExampleFactory.registerExtraColumn();
-
-  await UIExampleFactory.registerExtraColumnWithCustomCell();
-
-  await UIExampleFactory.registerReaderTabPanel();
-
-  PromptExampleFactory.registerNormalCommandExample();
-
-  PromptExampleFactory.registerAnonymousCommandExample();
-
-  PromptExampleFactory.registerConditionalCommandExample();
+  await selectoritem();
 
   await Zotero.Promise.delay(1000);
 
@@ -116,11 +88,8 @@ async function onNotify(
   // You can add your code to the corresponding notify type
   ztoolkit.log("notify", event, type, ids, extraData);
   if (event == "select" && type == "item") {
-    ztoolkit.log("1234455");
-    ztoolkit.log("1234455");
-    BasicExampleFactory.exampleNotifierCallback();
+    ztoolkit.log("notify", event);
   } else {
-    ztoolkit.log("1234455");
     return;
   }
 }
@@ -134,45 +103,10 @@ async function onNotify(
 async function onPrefsEvent(type: string, data: { [key: string]: any }) {
   switch (type) {
     case "load":
-      registerPrefsScripts(data.window);
+      await registerPrefsScripts(data.window);
       break;
     default:
       return;
-  }
-}
-
-// function onShortcuts(type: string) {
-//   switch (type) {
-//     case "larger":
-//       KeyExampleFactory.exampleShortcutLargerCallback();
-//       break;
-//     case "smaller":
-//       KeyExampleFactory.exampleShortcutSmallerCallback();
-//       break;
-//     default:
-//       break;
-//   }
-// }
-
-function onDialogEvents(type: string) {
-  switch (type) {
-    case "dialogExample":
-      HelperExampleFactory.dialogExample();
-      break;
-    case "clipboardExample":
-      HelperExampleFactory.clipboardExample();
-      break;
-    case "filePickerExample":
-      HelperExampleFactory.filePickerExample();
-      break;
-    case "progressWindowExample":
-      HelperExampleFactory.progressWindowExample();
-      break;
-    case "vtableExample":
-      HelperExampleFactory.vtableExample();
-      break;
-    default:
-      break;
   }
 }
 
@@ -187,5 +121,4 @@ export default {
   onMainWindowUnload,
   onNotify,
   onPrefsEvent,
-  onDialogEvents,
 };

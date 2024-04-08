@@ -1,13 +1,32 @@
 import { getPref } from "../utils/prefs";
+import { progressWindow } from "./message";
+import { getString } from "../utils/locale";
+import { config } from "../../package.json";
 
 export async function getMate() {
   const item = ZoteroPane.getSelectedItems()[0];
-  const newItem = await translateURL(item.getField("url"));
-
-  if (getPref("schema") === "save") {
-    return newItem;
-  } else {
-    updataItem(newItem, item);
+  try {
+    const newItem = await translateURL(item.getField("url"));
+    if (getPref("schema") === "save") {
+      progressWindow(
+        getString("message-saveItem-success"),
+        "success",
+      ).startCloseTimer(100000);
+      return newItem;
+    } else {
+      progressWindow(
+        getString("message-updateItem-success"),
+        "success",
+      ).startCloseTimer(100000);
+      return updataItem(newItem, item);
+    }
+  } catch (err) {
+    Zotero.logError(err);
+    progressWindow(
+      `${getString("message-getMate-error")}, ${err}`,
+      "error",
+    ).startCloseTimer(10000);
+    return;
   }
 }
 
@@ -61,7 +80,7 @@ async function translateURL(url) {
   return caller.start(() => _translateURLNow(url));
 }
 
-const _concurrentCallers: Map<string, any> = new Map();
+const _concurrentCallers = new Map();
 
 function _getConcurrentCaller(key, interval) {
   if (_concurrentCallers.has(key)) {
@@ -134,9 +153,8 @@ function _itemToAPIJSON(item) {
   return newItem;
 }
 
-async function updataItem(newItem, oldItem: Zotero.Item) {
+async function updataItem(newItem, oldItem) {
   if (newItem instanceof Zotero.Item) {
-    newItem = newItem.clone();
     ztoolkit.log("newitem is Zotero.Item");
   } else {
     // Convert `newItem` to Zotero.Item through API JSON format

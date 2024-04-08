@@ -1,7 +1,10 @@
 <linkset>
   <html:link rel="localization" href="__addonRef__-preferences.ftl" />
 </linkset>
-<vbox id="zotero-prefpane-__addonRef__" onload="Zotero.__addonInstance__.hooks.onPrefsEvent('load', {window})">
+<vbox
+  id="zotero-prefpane-__addonRef__"
+  onload="Zotero.__addonInstance__.hooks.onPrefsEvent('load', {window})"
+>
   <groupbox>
     <label>
       <html:h2 data-l10n-id="pref-general"></html:h2>
@@ -10,19 +13,23 @@
       <label data-l10n-id="pref-select"></label>
 
       <box id="__addonRef__-select-schema"></box>
-
     </hbox>
   </groupbox>
   <groupbox>
-    <checkbox id="__addonRef__-saveAttachments" preference="__prefsPrefix__.saveAttachments"
-      data-l10n-id="pref-saveAttachments" native="true" />
+    <checkbox
+      id="__addonRef__-saveAttachments"
+      preference="__prefsPrefix__.saveAttachments"
+      data-l10n-id="pref-saveAttachments"
+      native="true"
+    />
   </groupbox>
-
 </vbox>
 <groupbox>
   <label>
     <html:h2 data-l10n-id="pref-about"></html:h2>
   </label>
-  <label data-l10n-id="pref-help"
-    data-l10n-args='{"time": "__buildTime__","name": "__addonName__","version":"__buildVersion__"}'></label>
+  <label
+    data-l10n-id="pref-help"
+    data-l10n-args='{"time": "__buildTime__","name": "__addonName__","version":"__buildVersion__"}'
+  ></label>
 </groupbox>
