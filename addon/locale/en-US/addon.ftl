@@ -1,8 +1,8 @@
 startup-begin = Addon is loading
 startup-finish = Addon is ready
 
-pref-title= Update Matedata
-itemmenu-updateMatedata-label = Update Matedata
+pref-title= Update Metadata
+itemmenu-updateMetadata-label = Update Metadata
 
 ## 设置-模式
 schema-saveItem = saveItem

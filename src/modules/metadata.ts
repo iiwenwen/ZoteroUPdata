@@ -3,7 +3,7 @@ import { progressWindow } from "./message";
 import { getString } from "../utils/locale";
 import { config } from "../../package.json";
 
-export async function getMate() {
+export async function getMeta() {
   const item = ZoteroPane.getSelectedItems()[0];
   try {
     const newItem = await translateURL(item.getField("url"));
@@ -18,12 +18,12 @@ export async function getMate() {
         getString("message-updateItem-success"),
         "success",
       ).startCloseTimer(100000);
-      return updataItem(newItem, item);
+      return updateItem(newItem, item);
     }
   } catch (err) {
     Zotero.logError(err);
     progressWindow(
-      `${getString("message-getMate-error")}, ${err}`,
+      `${getString("message-getMeta-error")}, ${err}`,
       "error",
     ).startCloseTimer(10000);
     return;
@@ -153,7 +153,7 @@ function _itemToAPIJSON(item) {
   return newItem;
 }
 
-async function updataItem(newItem, oldItem) {
+async function updateItem(newItem, oldItem) {
   if (newItem instanceof Zotero.Item) {
     ztoolkit.log("newitem is Zotero.Item");
   } else {
@@ -181,7 +181,7 @@ async function updataItem(newItem, oldItem) {
   const newCreators = newItem.getCreators();
 
   oldItem.setCreators(newCreators);
-  ztoolkit.log("update mate");
+  ztoolkit.log("update meta");
   oldItem.save();
   return oldItem;
 }

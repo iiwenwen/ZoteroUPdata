@@ -1,15 +1,15 @@
 {
-  "name": "zotero-updata-metadata",
+  "name": "zotero-update-metadata",
   "version": "0.0.1",
-  "description": "Zotero updata metadata ",
+  "description": "Zotero update metadata ",
   "config": {
-    "addonName": "Zotero Updata Metadata",
-    "addonID": "zoteroupdatametadata@iiwenwen",
-    "addonRef": "zoteroupdatametadata",
-    "addonInstance": "UpdataMatedata",
-    "prefsPrefix": "extensions.zotero.zoteroupdatametadata",
-    "releasePage": "https://github.com/iiwenwen/ZoteroUPdata/releases",
-    "updateJSON": "https://raw.githubusercontent.com/iiwenwen/ZoteroUPdata/main/update.json"
+    "addonName": "Zotero update Metadata",
+    "addonID": "zoteroupdatemetadata@iiwenwen",
+    "addonRef": "zoteroupdatemetadata",
+    "addonInstance": "updateMetadata",
+    "prefsPrefix": "extensions.zotero.zoteroupdatemetadata",
+    "releasePage": "https://github.com/iiwenwen/Zoteroupdate/releases",
+    "updateJSON": "https://raw.githubusercontent.com/iiwenwen/Zoteroupdate/main/update.json"
   },
   "main": "src/index.ts",
   "scripts": {
@@ -23,7 +23,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com//iiwenwen/ZoteroUPdata.git"
+    "url": "git+https://github.com//iiwenwen/Zoteroupdate.git"
   },
   "author": "windingwind",
   "license": "AGPL-3.0-or-later",

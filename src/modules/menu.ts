@@ -1,15 +1,15 @@
 import { config } from "../../package.json";
 import { getString } from "../utils/locale";
-import { getMate } from "./matedate";
+import { getMeta } from "./metadata";
 
 export function registerMenu() {
   const menuIcon = `chrome://${config.addonRef}/content/icons/favicon.png`;
   ztoolkit.Menu.register("item", {
     tag: "menuitem",
-    id: "updateMatedata",
-    label: getString("itemmenu-updateMatedata-label"),
+    id: "updateMetadata",
+    label: getString("itemmenu-updateMetadata-label"),
     commandListener: (ev) => {
-      getMate();
+      getMeta();
     },
     icon: menuIcon,
   });
@@ -18,7 +18,7 @@ export function registerMenu() {
 // 右键功能禁用
 export async function disabledMeun() {
   const item = ZoteroPane.getSelectedItems()[0];
-  const menuUpMeta = document.getElementById(`updateMatedata`);
+  const menuUpMeta = document.getElementById(`updateMetadata`);
   const regex = /^https?:\/\/\w+\.douban\.com/;
   const url = item.getField("url");
   if (!regex.test(url)) {
