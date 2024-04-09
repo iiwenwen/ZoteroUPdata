@@ -28,7 +28,7 @@ export async function registerPrefsScripts(_window: Window) {
 }
 
 async function updatePrefsUI() {
-  disablePrefs();
+  // disablePrefs();
 }
 
 function bindPrefEvents() {
@@ -50,7 +50,7 @@ function bindPrefEvents() {
             if (e.target) {
               const target = e.target as HTMLInputElement;
               setPref("schema", target.value);
-              ztoolkit.log(target.value);
+              ztoolkit.log("schema", target.value);
             }
           },
         },
@@ -80,13 +80,25 @@ function bindPrefEvents() {
     doc.querySelector(`#${makeId("select-schema")}`) as HTMLElement,
   );
 }
-function disablePrefs() {
-  const state = getPref("saveAttachments");
-  addon.data.prefs?.window.document
-    .getElementById(`${config.addonRef}-saveAttachments`)
-    ?.setAttribute("disabled", String(!state));
-}
+// function disablePrefs() {
+//   const state = getPref("saveAttachments");
+//   ztoolkit.log("saveAttachments", state);
+//   // const doc = addon.data.prefs.window?.document;
+//   // const elemValue = fromElement?(doc.querySelector(`${config.addonRef}-saveAttachments`)as XUL.Checkbox).checked:getPref("saveAttachments")as boolean);
+//   // doc
+//   //   .querySelector(`${config.addonRef}-saveAttachments`)
+//   //   ?.addEventListener("command", (ev) => {
+//   //     ztoolkit.log("saveAttachments", state);
+//   //   });
+// }
 
 function makeId(type: string) {
   return `${config.addonRef}-${type}`;
+}
+
+function onPrefsEvents(type: string, fromElement: boolean = true) {
+  const doc = addon.data.prefs?.window.document;
+  if (!doc) {
+    return;
+  }
 }

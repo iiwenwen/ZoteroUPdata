@@ -21,7 +21,7 @@ export async function getMeta() {
       return updateItem(newItem, item);
     }
   } catch (err) {
-    Zotero.logError(err);
+    ztoolkit.log(err);
     progressWindow(
       `${getString("message-getMeta-error")}, ${err}`,
       "error",
@@ -30,25 +30,33 @@ export async function getMeta() {
   }
 }
 
-function getSettings() {
-  const coll = ZoteroPane.getSelectedCollection().id;
+function getSettings(): {
+  saveAttachments: boolean;
+  libraryID: boolean | null;
+  collections?: string[];
+} {
+  const coll = ZoteroPane.getSelectedCollection()?.id;
   const options = getPref("schema");
-  if (options === "save") {
-    return {
-      libraryID: null,
-      saveAttachments: true,
-      collections: [coll],
-    };
-  } else {
-    return {
-      libraryID: false,
-      saveAttachments: true,
-      collections: [coll],
-    };
+
+  // 创建返回对象的基本结构
+  const settings: {
+    saveAttachments: boolean;
+    libraryID: boolean | null;
+    collections?: string[];
+  } = {
+    saveAttachments: getPref("saveAttachments") as boolean,
+    libraryID: options === "save" ? null : false,
+  };
+
+  // 如果 coll 存在，才添加到 settings 中
+  if (typeof coll === "string") {
+    settings.collections = [coll];
   }
+
+  return settings;
 }
 
-async function translateDocument(doc) {
+async function translateDocument(doc: Document) {
   const translate = new Zotero.Translate.Web();
   translate.setDocument(doc);
   const translators = await translate.getTranslators();
@@ -62,18 +70,18 @@ async function translateDocument(doc) {
   try {
     return await translate.translate(options);
   } catch (err) {
-    Zotero.logError(err);
+    ztoolkit.log(err);
   }
   return [];
 }
 
-async function translateURL(url) {
+async function translateURL(url: string) {
   let key = url;
   try {
     const uri = Services.io.newURI(url);
     key = uri.host;
   } catch (e) {
-    Zotero.logError(e);
+    ztoolkit.log(e);
   }
   // Limit to two requests per second per host
   const caller = _getConcurrentCaller(key, 500);
@@ -82,24 +90,25 @@ async function translateURL(url) {
 
 const _concurrentCallers = new Map();
 
-function _getConcurrentCaller(key, interval) {
+function _getConcurrentCaller(key: string, interval: number) {
   if (_concurrentCallers.has(key)) {
     return _concurrentCallers.get(key);
   }
 
-  const { ConcurrentCaller } = Cu.import(
+  const { ConcurrentCaller } = Components.utils.import(
     "resource://zotero/concurrentCaller.js",
   );
+
   const caller = new ConcurrentCaller({
     numConcurrent: 1,
     interval,
-    onError: (e) => Zotero.logError(e),
+    onError: (e: any) => ztoolkit.log(e),
   });
   _concurrentCallers.set(key, caller);
   return caller;
 }
 
-async function _translateURLNow(url) {
+async function _translateURLNow(url: string | string[]) {
   const doc = (await Zotero.HTTP.processDocuments(url, (doc) => doc))[0];
   const newItems = await translateDocument(doc);
   if (!newItems.length) {
@@ -108,11 +117,27 @@ async function _translateURLNow(url) {
   return newItems[0];
 }
 
-function _itemToAPIJSON(item) {
-  const newItem = {
+function _itemToAPIJSON(item: {
+  [x: string]: any;
+  tags: Array<{
+    name: string;
+    tag: string;
+    type: number;
+  } | null>;
+}) {
+  const newItem: {
+    key: string;
+    version: number;
+    tags: Array<{ tag: string; type: number } | null>;
+    [x: string]: any; // Index signature to allow for arbitrary properties
+  } = {
     key: Zotero.Utilities.generateObjectKey(),
     version: 0,
+    tags: item.tags.map((tag) =>
+      tag ? { tag: tag.tag, type: tag.type } : null,
+    ),
   };
+
   for (const field in item) {
     if (
       field === "complete" ||
@@ -127,22 +152,18 @@ function _itemToAPIJSON(item) {
     if (field === "tags") {
       newItem.tags = item.tags
         .map((tag) => {
-          if (typeof tag === "object") {
-            if (tag.tag) {
-              tag = tag.tag;
-            } else if (tag.name) {
-              tag = tag.name;
-            } else {
-              Zotero.debug("_itemToAPIJSON: Discarded invalid tag");
-              return null;
-            }
-          } else if (tag === "") {
+          if (tag === null) {
             return null;
           }
 
-          return { tag: tag.toString(), type: 1 }; // automatic
+          const tagValue = typeof tag === "object" ? tag.tag || tag.name : tag;
+          if (tagValue === "") {
+            return null;
+          }
+
+          return { tag: tagValue.toString(), type: 1 }; // automatic
         })
-        .filter(Boolean);
+        .filter(Boolean) as Array<{ tag: string; type: number } | null>;
 
       continue;
     }
@@ -153,7 +174,7 @@ function _itemToAPIJSON(item) {
   return newItem;
 }
 
-async function updateItem(newItem, oldItem) {
+async function updateItem(newItem: Zotero.Item, oldItem: Zotero.Item) {
   if (newItem instanceof Zotero.Item) {
     ztoolkit.log("newitem is Zotero.Item");
   } else {

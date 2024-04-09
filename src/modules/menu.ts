@@ -16,19 +16,17 @@ export function registerMenu() {
 }
 
 // 右键功能禁用
-export async function disabledMeun() {
+function disabledMeun() {
   const item = ZoteroPane.getSelectedItems()[0];
-  const menuUpMeta = document.getElementById(`updateMetadata`);
+  const menuUpMeta = document.getElementById(
+    `updateMetadata`,
+  ) as HTMLButtonElement | null;
   const regex = /^https?:\/\/\w+\.douban\.com/;
-  const url = item.getField("url");
-  if (!regex.test(url)) {
-    menuUpMeta.setAttribute("disabled", "true");
-  } else {
-    menuUpMeta?.removeAttribute("disabled");
-  }
+  const url = item?.getField("url");
+  menuUpMeta?.setAttribute("disabled", regex.test(url) ? "" : "true");
 }
 // 右键事件监听
 export async function selectoritem() {
   const itemsTreeElement = document.getElementById("zotero-items-tree");
-  itemsTreeElement.addEventListener("contextmenu", () => disabledMeun());
+  itemsTreeElement?.addEventListener("contextmenu", () => disabledMeun());
 }

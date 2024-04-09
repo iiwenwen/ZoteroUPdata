@@ -1,15 +1,15 @@
 {
   "name": "zotero-update-metadata",
   "version": "0.0.1",
-  "description": "Zotero update metadata ",
+  "description": "Zotero Update metadata for translation ",
   "config": {
     "addonName": "Zotero update Metadata",
     "addonID": "zoteroupdatemetadata@iiwenwen",
     "addonRef": "zoteroupdatemetadata",
     "addonInstance": "updateMetadata",
     "prefsPrefix": "extensions.zotero.zoteroupdatemetadata",
-    "releasePage": "https://github.com/iiwenwen/Zoteroupdate/releases",
-    "updateJSON": "https://raw.githubusercontent.com/iiwenwen/Zoteroupdate/main/update.json"
+    "releasePage": "https://github.com/iiwenwen/zotero-update-metadata/releases",
+    "updateJSON": "https://raw.githubusercontent.com/iiwenwen/zotero-update-metadata/main/update.json"
   },
   "main": "src/index.ts",
   "scripts": {
@@ -23,14 +23,14 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com//iiwenwen/Zoteroupdate.git"
+    "url": "git+https://github.com//iiwenwen/zotero-update-metadata.git"
   },
   "author": "windingwind",
   "license": "AGPL-3.0-or-later",
   "bugs": {
-    "url": "https://github.com/windingwind/zotero-addon-template/issues"
+    "url": "https://github.com//iiwenwen/zotero-update-metadata/issues"
   },
-  "homepage": "https://github.com/windingwind/zotero-addon-template#readme",
+  "homepage": "https://github.com//iiwenwen/zotero-update-metadata#readme",
   "dependencies": {
     "zotero-plugin-toolkit": "^2.3.15"
   },
