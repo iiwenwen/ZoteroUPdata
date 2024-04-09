@@ -1,13 +1,13 @@
 {
   "name": "zotero-update-metadata",
   "version": "1.0.0",
-  "description": "Zotero Update metadata for translation ",
+  "description": "Zotero update metadata for translation ",
   "config": {
     "addonName": "Zotero update Metadata",
-    "addonID": "zoteroupdatemetadata@iiwenwen",
-    "addonRef": "zoteroupdatemetadata",
-    "addonInstance": "updateMetadata",
-    "prefsPrefix": "extensions.zotero.zoteroupdatemetadata",
+    "addonID": "zotero-update-metadata@iiwenwen",
+    "addonRef": "updatemetadata",
+    "addonInstance": "UpdateMetadata",
+    "prefsPrefix": "extensions.zotero.updatemetadata",
     "releasePage": "https://github.com/iiwenwen/zotero-update-metadata/releases",
     "updateJSON": "https://raw.githubusercontent.com/iiwenwen/zotero-update-metadata/main/update.json"
   },
