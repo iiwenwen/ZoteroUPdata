@@ -1,6 +1,6 @@
 {
   "name": "zotero-update-metadata",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "Zotero update metadata for translation ",
   "config": {
     "addonName": "Zotero update Metadata",
