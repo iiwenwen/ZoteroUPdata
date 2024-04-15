@@ -19,13 +19,17 @@
 
 - 目前只适用于使用豆瓣保存的条目。
 
+## TODO
+
+- [ ] 更新条目时可选择是否保存附件
+
 ## 致谢
 
 - 本插件使用[Zotero Plugin Template](https://github.com/windingwind/zotero-plugin-template)构建。
 - 本插件核心代码基于[mrtcode/zotero at update-metadata](https://github.com/mrtcode/zotero/tree/update-metadata)修改而来。
 - 本插件部分代码参考：
-  - [northword/zotero-format-metadata: Linter for Zotero. An addon for Zotero to format item metadata. Shortcut to set title rich text; set journal abbreviations, university places, and item languages, etc; detect duplicate items.](https://github.com/northword/zotero-format-metadata)
-  - [windingwind/zotero-pdf-translate at 87299879409b8d74c45b7690e0227232de407c0a](https://github.com/windingwind/zotero-pdf-translate/tree/87299879409b8d74c45b7690e0227232de407c0a)
+  + [northword/zotero-format-metadata](https://github.com/northword/zotero-format-metadata)
+  + [windingwind/zotero-pdf-translate](https://github.com/windingwind/zotero-pdf-translate/tree/87299879409b8d74c45b7690e0227232de407c0a)
 
 ## Disclaimer 免责声明
 
