@@ -11,13 +11,16 @@ export async function getMeta() {
       progressWindow(
         getString("message-saveItem-success"),
         "success",
-      ).startCloseTimer(100000);
+      ).startCloseTimer(3000);
+      for (const field in newItem) {
+        ztoolkit.log(newItem, newItem[field]);
+      }
       return newItem;
     } else {
       progressWindow(
         getString("message-updateItem-success"),
         "success",
-      ).startCloseTimer(100000);
+      ).startCloseTimer(3000);
       return updateItem(newItem, item);
     }
   } catch (err) {
@@ -25,7 +28,7 @@ export async function getMeta() {
     progressWindow(
       `${getString("message-getMeta-error")}, ${err}`,
       "error",
-    ).startCloseTimer(10000);
+    ).startCloseTimer(3000);
     return;
   }
 }
@@ -33,7 +36,7 @@ export async function getMeta() {
 function getSettings(): {
   saveAttachments: boolean;
   libraryID: boolean | null;
-  collections?: string[];
+  collections?: number[];
 } {
   const coll = ZoteroPane.getSelectedCollection()?.id;
   const options = getPref("schema");
@@ -42,14 +45,14 @@ function getSettings(): {
   const settings: {
     saveAttachments: boolean;
     libraryID: boolean | null;
-    collections?: string[];
+    collections?: number[];
   } = {
     saveAttachments: getPref("saveAttachments") as boolean,
     libraryID: options === "save" ? null : false,
   };
 
   // 如果 coll 存在，才添加到 settings 中
-  if (typeof coll === "string") {
+  if (typeof coll === "number") {
     settings.collections = [coll];
   }
 
@@ -137,14 +140,15 @@ function _itemToAPIJSON(item: {
       tag ? { tag: tag.tag, type: tag.type } : null,
     ),
   };
-
+  ztoolkit.log("item", item);
   for (const field in item) {
+    ztoolkit.log("zfield", field);
     if (
       field === "complete" ||
       field === "itemID" ||
-      field === "attachments" ||
-      field === "seeAlso" ||
-      field === "notes"
+      // field === "attachments" ||
+      field === "seeAlso"
+      // field === "notes"
     ) {
       continue;
     }
@@ -190,9 +194,7 @@ async function updateItem(newItem: Zotero.Item, oldItem: Zotero.Item) {
 
   let allFields = Zotero.ItemFields.getItemTypeFields(newItem.itemTypeID);
   allFields = [...new Set(allFields)].map((x) => Zotero.ItemFields.getName(x));
-  ztoolkit.log("allFields03", allFields);
   for (const fieldName of allFields) {
-    ztoolkit.log("fieldName", fieldName);
     const oldValue = oldItem.getField(fieldName) || "";
     const newValue = newItem.getField(fieldName) || "";
     oldItem.setField(fieldName, newValue);
@@ -203,6 +205,6 @@ async function updateItem(newItem: Zotero.Item, oldItem: Zotero.Item) {
 
   oldItem.setCreators(newCreators);
   ztoolkit.log("update meta");
-  oldItem.save();
+  oldItem.saveTx();
   return oldItem;
 }
