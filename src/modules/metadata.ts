@@ -1,7 +1,6 @@
 import { getPref } from "../utils/prefs";
 import { progressWindow } from "./message";
 import { getString } from "../utils/locale";
-import { config } from "../../package.json";
 
 export async function getMeta() {
   const item = ZoteroPane.getSelectedItems()[0];
@@ -12,9 +11,6 @@ export async function getMeta() {
         getString("message-saveItem-success"),
         "success",
       ).startCloseTimer(3000);
-      for (const field in newItem) {
-        ztoolkit.log(newItem, newItem[field]);
-      }
       return newItem;
     } else {
       progressWindow(
@@ -120,91 +116,96 @@ async function _translateURLNow(url: string | string[]) {
   return newItems[0];
 }
 
-function _itemToAPIJSON(item: {
-  [x: string]: any;
-  tags: Array<{
-    name: string;
-    tag: string;
-    type: number;
-  } | null>;
-}) {
-  const newItem: {
-    key: string;
-    version: number;
-    tags: Array<{ tag: string; type: number } | null>;
-    [x: string]: any; // Index signature to allow for arbitrary properties
-  } = {
-    key: Zotero.Utilities.generateObjectKey(),
-    version: 0,
-    tags: item.tags.map((tag) =>
-      tag ? { tag: tag.tag, type: tag.type } : null,
-    ),
-  };
-  ztoolkit.log("item", item);
-  for (const field in item) {
-    ztoolkit.log("zfield", field);
-    if (
-      field === "complete" ||
-      field === "itemID" ||
-      // field === "attachments" ||
-      field === "seeAlso"
-      // field === "notes"
-    ) {
-      continue;
-    }
-
-    if (field === "tags") {
-      newItem.tags = item.tags
-        .map((tag) => {
-          if (tag === null) {
-            return null;
-          }
-
-          const tagValue = typeof tag === "object" ? tag.tag || tag.name : tag;
-          if (tagValue === "") {
-            return null;
-          }
-
-          return { tag: tagValue.toString(), type: 1 }; // automatic
-        })
-        .filter(Boolean) as Array<{ tag: string; type: number } | null>;
-
-      continue;
-    }
-
-    newItem[field] = item[field];
-  }
-
-  return newItem;
+async function saveNote(newItem: any, oldItem: Zotero.Item) {
+  const note = new Zotero.Item("note");
+  note.setNote(newItem["notes"].join(""));
+  note.parentID = oldItem.id;
+  await note.saveTx();
+  ztoolkit.log("save Note successful");
 }
 
-async function updateItem(newItem: Zotero.Item, oldItem: Zotero.Item) {
-  if (newItem instanceof Zotero.Item) {
-    ztoolkit.log("newitem is Zotero.Item");
-  } else {
-    // Convert `newItem` to Zotero.Item through API JSON format
-    ztoolkit.log("newitem  not is Zotero.Item");
-    const tmpItem = new Zotero.Item();
-    tmpItem.fromJSON(_itemToAPIJSON(newItem));
-    newItem = tmpItem;
-  }
-  if (newItem instanceof Zotero.Item) {
-    ztoolkit.log("newitem is Zotero.Item", newItem);
-  }
+async function saveAttachments(newItem: any, oldItem: Zotero.Item) {
+  const options = {
+    url: newItem["attachments"][0]["url"],
+    contentType: newItem["attachments"][0]["mimeType"],
+    title: newItem["attachments"][0]["title"],
+    parentItemID: oldItem.id,
+    libraryID: Zotero.Libraries.userLibraryID,
+    fileBaseName: `${newItem.creators[0].lastName} - ${newItem.date.slice(0, 4)} - ${newItem.title}`,
+  };
+  Zotero.Attachments.importFromURL(options);
+  ztoolkit.log("save Attachments successful");
+}
 
-  let allFields = Zotero.ItemFields.getItemTypeFields(newItem.itemTypeID);
-  allFields = [...new Set(allFields)].map((x) => Zotero.ItemFields.getName(x));
-  for (const fieldName of allFields) {
-    const oldValue = oldItem.getField(fieldName) || "";
-    const newValue = newItem.getField(fieldName) || "";
-    oldItem.setField(fieldName, newValue);
+async function updateItem(newItem: any, oldItem: Zotero.Item) {
+  for (const field of Object.keys(newItem)) {
+    switch (field) {
+      case "notes":
+        {
+          if (newItem["notes"].length === 0) break;
+          if (getPref("saveAttachments") === true) {
+            const noteIDs = oldItem.getNotes();
+            if (noteIDs.length === 0) {
+              saveNote(newItem, oldItem);
+            } else {
+              const results = [];
+              for (const noteID of noteIDs) {
+                const noteItem = Zotero.Items.get(noteID);
+                const noteTitle = noteItem.getNoteTitle();
+                const regex = /目录/;
+                const result = regex.test(noteTitle);
+                results.push(result);
+              }
+              if (!results.some((result) => result === true)) {
+                saveNote(newItem, oldItem);
+              }
+            }
+          }
+        }
+        break;
+      case "attachments":
+        {
+          if (newItem["attachments"].length === 0) break;
+          if (getPref("saveAttachments") === true) {
+            const attachmentIDs = oldItem.getAttachments();
+            if (attachmentIDs.length === 0) {
+              saveAttachments(newItem, oldItem);
+            } else {
+              const results = [];
+              for (const attachmentID of attachmentIDs) {
+                const attachmentItem = Zotero.Items.get(attachmentID);
+                if (attachmentItem.getField("title") === newItem["title"]) {
+                  results.push(true);
+                }
+              }
+              if (!results.some((result) => result === true)) {
+                saveAttachments(newItem, oldItem);
+              }
+            }
+          }
+        }
+        break;
+      case "tags":
+      case "seeAlso":
+      case "itemType":
+        break;
+      case "creators":
+        oldItem.setCreators(newItem["creators"]);
+        ztoolkit.log("Update creators");
+        break;
+      default: {
+        const newFieldValue = newItem[field] ?? "",
+          // @ts-ignore field 已为 Zotero.Item.ItemField
+          oldFieldValue = oldItem.getField(field);
+        ztoolkit.log(
+          `Update ${field} from ${oldFieldValue} to ${newFieldValue}`,
+        );
+        // @ts-ignore field 已为 Zotero.Item.ItemField
+        oldItem.setField(field, newFieldValue);
+        break;
+      }
+    }
   }
-
-  const oldCreators = oldItem.getCreators();
-  const newCreators = newItem.getCreators();
-
-  oldItem.setCreators(newCreators);
-  ztoolkit.log("update meta");
-  oldItem.saveTx();
-  return oldItem;
+  await oldItem.saveTx();
+  // return oldItem;
 }
