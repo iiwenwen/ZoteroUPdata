@@ -3,6 +3,9 @@
 [![zotero target version](https://img.shields.io/badge/Zotero-7-green?style=flat-square&logo=zotero&logoColor=CC2936)](https://www.zotero.org)
 [![Using Zotero Plugin Template](https://img.shields.io/badge/Using-Zotero%20Plugin%20Template-blue?style=flat-square&logo=github)](https://github.com/windingwind/zotero-plugin-template)
 
+[![English](https://img.shields.io/badge/英文-English-blue.svg)](https://github.com/iiwenwen/zotero-update-metadata/blob/main/README.md)
+[![Chinese](https://img.shields.io/badge/中文-Chinese-blue.svg)](https://github.com/iiwenwen/zotero-update-metadata/blob/main/doc/README-zhCN.md)
+
 这个项目允许你直接从Zotero条目的URL字段更新或保存元数据，无需在对应页面上保存元数据。
 
 ## 功能
