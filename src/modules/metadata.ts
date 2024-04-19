@@ -1,32 +1,54 @@
 import { getPref } from "../utils/prefs";
-import { progressWindow } from "./message";
 import { getString } from "../utils/locale";
+import { config } from "../../package.json";
 
 export async function getMeta() {
-  const item = ZoteroPane.getSelectedItems()[0];
-  try {
-    const newItem = await translateURL(item.getField("url"));
-    if (getPref("schema") === "save") {
-      progressWindow(
-        getString("message-saveItem-success"),
-        "success",
-      ).startCloseTimer(3000);
-      return newItem;
-    } else {
-      progressWindow(
-        getString("message-updateItem-success"),
-        "success",
-      ).startCloseTimer(3000);
-      return updateItem(newItem, item);
+  const items = ZoteroPane.getSelectedItems();
+  const popWin = new ztoolkit.ProgressWindow(config.addonName, {
+    closeOnClick: true,
+    closeTime: -1,
+  });
+
+  popWin
+    .createLine({
+      type: "default",
+      text: getString("message-getMeta-into"),
+      progress: 0,
+      idx: 0,
+    })
+    .show();
+  const promises = items.map(async (item, index) => {
+    if (!item.isNote() && !item.isAttachment()) {
+      try {
+        const newItem = await translateURL(item.getField("url"));
+        popWin.changeLine({
+          type: "success",
+          progress: 0,
+          text: `${index + 1}/${items.length} ${getString("message-saveItem-success")}`,
+          idx: 1,
+        });
+        if (getPref("schema") === "save") {
+          updateItem(newItem, item);
+          popWin.changeLine({
+            type: "success",
+            progress: 0,
+            text: `${index + 1}/${items.length} ${getString("message-updateItem-success")}`,
+            idx: 1,
+          });
+        }
+      } catch (err) {
+        ztoolkit.log(err);
+        popWin.changeLine({
+          type: "error",
+          progress: 0,
+          text: `${index + 1}/${items.length} ${getString("message-getMeta-error")}, ${err}`,
+          idx: 1,
+        });
+      }
     }
-  } catch (err) {
-    ztoolkit.log(err);
-    progressWindow(
-      `${getString("message-getMeta-error")}, ${err}`,
-      "error",
-    ).startCloseTimer(3000);
-    return;
-  }
+  });
+
+  await Promise.all(promises);
 }
 
 function getSettings(): {

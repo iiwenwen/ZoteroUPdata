@@ -9,6 +9,7 @@ schema-saveItem = saveItem
 schema-updateItem = updateItem
 
 ##通知
+message-getMeta-into = getMeta...
 message-saveItem-success = saveItem success
 message-saveItem-fail = saveItem fail
 message-updateItem-success = updateItem success

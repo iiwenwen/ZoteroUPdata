@@ -13,6 +13,37 @@ export function registerMenu() {
     },
     icon: menuIcon,
   });
+  // ztoolkit.Menu.register("item", {
+  //   tag: "menuitem",
+  //   id: "test",
+  //   label: getString("itemmenu-test-label"),
+  //   commandListener: (ev) => {
+  //     const popWin = new ztoolkit.ProgressWindow(config.addonName, {
+  //       closeOnClick: true,
+  //       closeTime: -1,
+  //     });
+
+  //     popWin
+  //       .changeLine({
+  //         type: "default",
+  //         text: getString("message-getMeta-into"),
+  //         progress: 0,
+  //         idx: 0,
+  //       })
+  //       .createLine({ text: getString("message-saveItem-success"), idx: 1 })
+  //       .show();
+
+  //     setTimeout(() => {
+  //       popWin.changeLine({
+  //         text: getString("message-updateItem-success"),
+  //         progress: 0,
+  //         idx: 1,
+  //       });
+  //     }, 2000);
+  //   },
+
+  //   icon: menuIcon,
+  // });
 }
 
 // 右键功能禁用
