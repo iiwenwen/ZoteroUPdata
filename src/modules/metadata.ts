@@ -56,7 +56,7 @@ export async function getMeta() {
 
 function getSettings(): {
   saveAttachments: boolean;
-  libraryID: boolean | null;
+  libraryID: boolean | number;
   collections?: number[];
 } {
   const coll = ZoteroPane.getSelectedCollection()?.id;
@@ -65,11 +65,11 @@ function getSettings(): {
   // 创建返回对象的基本结构
   const settings: {
     saveAttachments: boolean;
-    libraryID: boolean | null;
+    libraryID: boolean | number;
     collections?: number[];
   } = {
     saveAttachments: getPref("saveAttachments") as boolean,
-    libraryID: options === "save" ? null : false,
+    libraryID: options === "save" ? Zotero.Libraries.userLibraryID : false,
   };
 
   // 如果 coll 存在，才添加到 settings 中
@@ -156,7 +156,7 @@ async function saveAttachments(newItem: any, oldItem: Zotero.Item) {
     title: newItem["attachments"][0]["title"],
     parentItemID: oldItem.id,
     libraryID: Zotero.Libraries.userLibraryID,
-    fileBaseName: `${newItem.creators[0].lastName} - ${newItem.date.slice(0, 4)} - ${newItem.title}`,
+    fileBaseName: `${newItem.creators[0].lastName} - ${newItem.date.slice(0, 4)} - ${newItem.title.replace(/\//g, "")}`,
   };
   Zotero.Attachments.importFromURL(options);
   ztoolkit.log("save Attachments successful");
