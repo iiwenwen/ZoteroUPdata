@@ -17,38 +17,41 @@ export async function getMeta() {
       idx: 0,
     })
     .show();
-  const promises = items.map(async (item, index) => {
+  items.forEach((item, inedx) => {
     if (!item.isNote() && !item.isAttachment()) {
-      try {
-        const newItem = await translateURL(item.getField("url"));
-        popWin.changeLine({
-          type: "success",
-          progress: 0,
-          text: `${index + 1}/${items.length} ${getString("message-saveItem-success")}`,
-          idx: 1,
+      translateURL(item.getField("url"))
+        .then((newItem) => {
+          if (getPref("schema") === "save") {
+            popWin.changeLine({
+              type: "success",
+              progress: 0,
+              text: `${inedx + 1}/${items.length}${getString("message-saveItem-success")}`,
+              idx: 1,
+            });
+            return newItem;
+          } else {
+            updateItem(newItem, item);
+            popWin.changeLine({
+              type: "success",
+              progress: 0,
+              text: `${inedx + 1}/${items.length}${getString("message-updateItem-success")}`,
+              idx: 1,
+            });
+          }
+        })
+        .catch((err) => {
+          ztoolkit.log(err);
+          popWin
+            .changeLine({
+              type: "error",
+              progress: 0,
+              text: `${inedx + 1}/${items.length}${getString("message-getMeta-error")}, ${err}`,
+              idx: 1,
+            })
+            .startCloseTimer(3000);
         });
-        if (getPref("schema") === "save") {
-          updateItem(newItem, item);
-          popWin.changeLine({
-            type: "success",
-            progress: 0,
-            text: `${index + 1}/${items.length} ${getString("message-updateItem-success")}`,
-            idx: 1,
-          });
-        }
-      } catch (err) {
-        ztoolkit.log(err);
-        popWin.changeLine({
-          type: "error",
-          progress: 0,
-          text: `${index + 1}/${items.length} ${getString("message-getMeta-error")}, ${err}`,
-          idx: 1,
-        });
-      }
     }
   });
-
-  await Promise.all(promises);
 }
 
 function getSettings(): {
